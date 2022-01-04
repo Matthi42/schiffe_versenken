@@ -1,13 +1,33 @@
 <template>
-  <div id="nav">
-    <!--
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-    -->
-    <Home></Home>
+  <div>
+    <h1>Schiffe versenken</h1>
+    <button title="send" @click="send()">send</button>
+    <p>{{ lastMessage }}</p>
+    <input type="text" v-model="message" />
   </div>
-  <router-view/>
-</template>
+  <router-view />
+</template >
+
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+
+@Options({})
+export default class App extends Vue {
+  get lastMessage():string {
+    return this.$store.getters.lastMessage;
+  }
+  message = "";
+  send() :void{
+    this.$socket.send (
+      JSON.stringify({
+        type: "broadcast",
+        message: this.message,
+      })
+    );
+  }
+}
+</script>
+
 
 <style lang="scss">
 #app {
@@ -16,18 +36,5 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
 }
 </style>
