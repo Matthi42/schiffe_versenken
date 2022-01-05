@@ -1,9 +1,6 @@
 <template>
   <div>
     <h1>Schiffe versenken</h1>
-    <button title="send" @click="send()">send</button>
-    <p>{{ lastMessage }}</p>
-    <input type="text" v-model="message" />
   </div>
   <router-view />
 </template >
@@ -13,18 +10,7 @@ import { Options, Vue } from "vue-class-component";
 
 @Options({})
 export default class App extends Vue {
-  get lastMessage():string {
-    return this.$store.getters.lastMessage;
-  }
-  message = "";
-  send() :void{
-    this.$socket.send (
-      JSON.stringify({
-        type: "broadcast",
-        message: this.message,
-      })
-    );
-  }
+
 }
 </script>
 

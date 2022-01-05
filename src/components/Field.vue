@@ -43,18 +43,13 @@
       <svg
         :width="60 * ship.shipSize"
         height="60"
-        class="ship"
         :transform="
           ship.orientation === 'horizontal'
             ? `rotate(0,${(ship.shipSize * 60) / -2 + 30},0)`
             : `rotate(90,${(ship.shipSize * 60) / -2 + 30},0)`
         "
       >
-        <rect
-          :width="60 * ship.shipSize"
-          height="60"
-          :style="`fill: rgb(0, 0, 255); stroke-width: 3; stroke: rgb(0, 0, 0)`"
-        />
+        <rect :width="60 * ship.shipSize" height="60" />
       </svg>
     </div>
     <div class="shipII" draggable="true"></div>
@@ -62,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { Ship } from "@/types/serverCom";
+import { Ship } from "@/types/ship";
 import { Options, Vue } from "vue-class-component";
 import Tile from "./Tile.vue";
 
@@ -84,20 +79,19 @@ export default class Field extends Vue {
   get ships(): Ship[] {
     return this.$store.getters.allShips;
   }
-  rotate(id: number):void {
-    if(this.setUp)
-    this.$store.commit("rotateShip", id);
+  rotate(id: number): void {
+    if (this.setUp) this.$store.commit("rotateShip", id);
   }
   array = [...Array(100).keys()];
 
-  startDrag(event: DragEvent, ship: number) :void {
+  startDrag(event: DragEvent, ship: number): void {
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = "move";
       event.dataTransfer.effectAllowed = "move";
       event.dataTransfer.setData("ship", ship.toString());
     }
   }
-  onDrop(event: DragEvent, tile: number):void {
+  onDrop(event: DragEvent, tile: number): void {
     if (this.setUp) {
       const shipID = event.dataTransfer?.getData("ship");
       this.$store.commit("moveShip", [
@@ -122,11 +116,19 @@ export default class Field extends Vue {
 .element {
   display: grid;
 }
+
 .ship {
   transition-property: transform;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
   transition: grid-area 0.2s;
+  svg {
+    rect {
+      fill: rgb(0, 0, 255);
+      stroke-width: 3;
+      stroke: rgb(0, 0, 0);
+    }
+  }
 }
 
 [draggable="true"] {
