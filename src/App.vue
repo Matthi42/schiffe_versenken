@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Schiffe versenken</h1>
+    <div v-for="name in namen" v-bind:key="name" :style="{ backgroundColor: color(name), color: textColor(color(name))}">{{ name }}</div>
     <button title="send" @click="send()">send</button>
     <p>{{ lastMessage }}</p>
     <input type="text" v-model="message" />
@@ -10,6 +11,7 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import { luminanceOfString, nameToColor } from "@/color/color"
 
 @Options({})
 export default class App extends Vue {
@@ -24,6 +26,15 @@ export default class App extends Vue {
         message: this.message,
       })
     );
+  }
+
+  namen = ["Sophie", "Peter", "Alf", "Eda", "Miriam", "Uwe", "Heino"]
+
+  color(a:string) {
+    return nameToColor(a)
+  }
+  textColor(a:string) {
+    return luminanceOfString(a) > 50 ? 'white' : 'black'
   }
 }
 </script>
