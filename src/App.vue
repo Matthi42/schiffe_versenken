@@ -3,8 +3,6 @@
     <h1>Schiffe versenken</h1>
     <div v-for="name in namen" v-bind:key="name" :style="{ backgroundColor: color(name), color: textColor(color(name))}">{{ name }}</div>
     <button title="send" @click="send()">send</button>
-    <p>{{ lastMessage }}</p>
-    <input type="text" v-model="message" />
   </div>
   <router-view />
 </template >
@@ -15,18 +13,11 @@ import { luminanceOfString, nameToColor } from "@/color/color"
 
 @Options({})
 export default class App extends Vue {
+
   get lastMessage():string {
     return this.$store.getters.lastMessage;
   }
-  message = "";
-  send() :void{
-    this.$socket.send (
-      JSON.stringify({
-        type: "broadcast",
-        message: this.message,
-      })
-    );
-  }
+
 
   namen = ["Sophie", "Peter", "Alf", "Eda", "Miriam", "Uwe", "Heino"]
 
@@ -36,6 +27,8 @@ export default class App extends Vue {
   textColor(a:string) {
     return luminanceOfString(a) > 50 ? 'white' : 'black'
   }
+
+
 }
 </script>
 

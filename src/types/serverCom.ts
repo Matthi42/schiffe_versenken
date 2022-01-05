@@ -1,4 +1,6 @@
-export type ServerMessage = init | message | broadcast | error | disconnect
+import { Message } from "./messages";
+
+export type ServerMessage = init | message | broadcast | error | disconnect | connect
 export interface init {
     type: 'init'
     clientID: number
@@ -7,13 +9,13 @@ export interface init {
 export interface message {
     type: 'message'
     sender: number
-    message: string
+    message: Message
 }
 
 export interface broadcast {
     type: 'broadcast'
     sender: number
-    message: string
+    message: Message
 }
 
 export interface error {
@@ -26,18 +28,7 @@ export interface disconnect {
     user: number
 }
 
-export interface gameMessage {
-    test: number
-}
-
-export interface Ship {
-    shipPos: Point,
-    shipID: number,
-    shipSize: number,
-    orientation: "horizontal" | "vertical",
-}
-
-export interface Point {
-    x: number
-    y: number
+export interface connect {
+    type: 'connect'
+    clientID: number  
 }

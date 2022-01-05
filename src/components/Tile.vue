@@ -67,7 +67,7 @@ export default class Tile extends Vue {
 .fil0 {
     fill: white;
     &:hover{
-        fill:aqua;
+        fill:rgb(198, 255, 255);
     }
 }
 </style>

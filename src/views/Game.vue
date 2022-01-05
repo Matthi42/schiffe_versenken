@@ -12,7 +12,7 @@ import { Options, Vue } from "vue-class-component";
   components:{Field}
 })
 export default class Game extends Vue{
-  test(){
+  test() :void{
     console.debug('test')
     this.$socket.send('{"type":"lol"}')
   }
