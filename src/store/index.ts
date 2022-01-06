@@ -161,7 +161,7 @@ export default createStore({
             switch (data.message.type) {
               case 'chat':
                 if ( data.message.text != '' )
-                  state.globalChat.push({ ownMessage: false, sender: state.otherPlayers.find(p => p.id = data.sender)?.name, message: data.message.text })
+                  state.globalChat.push({ ownMessage: false, sender: state.otherPlayers.find(p => p.id == data.sender)?.name, message: data.message.text })
                 break
               case 'game':
                 break

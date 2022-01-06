@@ -1,8 +1,6 @@
 <template>
   <div>
     <h1>Schiffe versenken</h1>
-    <div v-for="name in namen" v-bind:key="name" :style="{ backgroundColor: color(name), color: textColor(color(name))}">{{ name }}</div>
-    <button title="send" @click="send()">send</button>
   </div>
   <router-view />
 </template >
@@ -14,19 +12,7 @@ import { luminanceOfString, nameToColor } from "@/color/color"
 @Options({})
 export default class App extends Vue {
 
-  get lastMessage():string {
-    return this.$store.getters.lastMessage;
-  }
 
-
-  namen = ["Sophie", "Peter", "Alf", "Eda", "Miriam", "Uwe", "Heino"]
-
-  color(a:string) {
-    return nameToColor(a)
-  }
-  textColor(a:string) {
-    return luminanceOfString(a) > 50 ? 'white' : 'black'
-  }
 
 
 }
@@ -34,11 +20,32 @@ export default class App extends Vue {
 
 
 <style lang="scss">
+  html {
+    width: 100% !important;
+    display: inline;
+  }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+button  {
+  border-radius: 5px;
+  border-color: darkblue;
+  color: white;
+  background-color: rgb(98, 107, 241);
+  margin: 4px;
+  padding: 2px 6px;
+  &:hover{
+    background-color: rgb(130, 138, 243);
+  }
+}
+input {
+  border-radius: 5px;
+  border-width: 1px;
+  margin: 5px;
+  padding: 2px 6px;
 }
 </style>
