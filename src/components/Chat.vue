@@ -30,6 +30,7 @@
 
 <script lang="ts">
 import { luminanceOfString, nameToColor } from "@/color/color";
+import { ChatMessageI } from "@/types/playerList";
 import { Options, Vue } from "vue-class-component";
 
 @Options({
@@ -41,23 +42,23 @@ import { Options, Vue } from "vue-class-component";
 export default class Chat extends Vue {
   currentChat = "";
 
-  get chat() {
+  get chat():ChatMessageI[] {
     return this.$store.getters.globalChat;
   }
-  sendChat() {
+  sendChat():void {
     if (this.currentChat != "") {
       this.$store.commit("sendGlobalChat", this.currentChat);
       this.currentChat = "";
     }
   }
 
-  color(a: string) {
+  color(a: string):string {
     return nameToColor(a);
   }
-  textColor(a: string) {
+  textColor(a: string):'white'|'black' {
     return luminanceOfString(a) < 125 ? "white" : "black";
   }
-  scrollToBottom() {
+  scrollToBottom():void {
     const container = this.$el.querySelector("#chat");
     container.scrollTop = container.scrollHeight;
   }

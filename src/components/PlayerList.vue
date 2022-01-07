@@ -13,12 +13,17 @@
     <div>
       <h3>{{ myName }}</h3>
       <select v-model="selectedTurn">
-        <option v-for="turn in turnOptions" v-bind:value="turn.id" :key="turn.id">
+        <option
+          v-for="turn in turnOptions"
+          v-bind:value="turn.id"
+          :key="turn.id"
+        >
           {{ turn.option }}
         </option>
       </select>
-      <button :disabled="!selectedPlayer.id" @click="challenge">herausfordern</button>
-      <p>{{ test }}</p>
+      <button :disabled="!selectedPlayer.name" @click="challenge">
+        herausfordern
+      </button>
       <ul class="player-list">
         <li v-for="player in players" v-bind:key="player.id">
           <div
@@ -42,27 +47,23 @@ import { Options, Vue } from "vue-class-component";
 
 @Options({})
 export default class PlayerList extends Vue {
-test=''
-setTest(){
-  this.test='aua'
-}
-  challenge() {
-    let firstMove = ''
-    switch(this.selectedTurn) {
-      case 1: 
-        firstMove = Math.random() < 0.5 ? 'me' : 'you'
-        break
-      case 2: 
-        firstMove='me'
-        break
-      case 3: 
-        firstMove='you'
-        break
+  challenge():void {
+    let firstMove = "";
+    switch (this.selectedTurn) {
+      case 1:
+        firstMove = Math.random() < 0.5 ? "me" : "you";
+        break;
+      case 2:
+        firstMove = "me";
+        break;
+      case 3:
+        firstMove = "you";
+        break;
     }
-    this.$store.commit('challenge',[this.selectedPlayer.id,firstMove])
+    this.$store.commit("challenge", [this.selectedPlayer.id, firstMove]);
   }
 
-  selectedPlayer:any = {};
+  selectedPlayer: any = {};
 
   selectedTurn = 1;
   turnOptions = [
@@ -71,7 +72,7 @@ setTest(){
     { id: 3, option: "gegner" },
   ];
 
-  selectPlayer(player: Player) {
+  selectPlayer(player: Player):void {
     this.selectedPlayer = player;
   }
 

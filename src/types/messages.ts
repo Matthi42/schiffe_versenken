@@ -31,7 +31,7 @@ export interface Name {
 
 export interface Challange {
     type: 'challange'
-    message: SendCallange | CancelChallange
+    message: SendCallange | CancelChallange | AccepChallange 
 }
 
 export interface SendCallange {

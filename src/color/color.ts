@@ -8,7 +8,7 @@ export const nameToColor = (name: string): string => {
     return `rgb(${redValue},${greenValue},${blueValue})`
 }
 
-const luminance = ([R,G,B]:number[]) => (0.299 * R + 0.587 * G + 0.114 * B)
+const luminance = ([R, G, B]: number[]): number => 0.299 * R + 0.587 * G + 0.114 * B
 
 const parseRGB = (color: string): number[] => {
     const m = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
@@ -18,7 +18,7 @@ const parseRGB = (color: string): number[] => {
     return []
 }
 
-export const luminanceOfString = (string:string) => luminance(parseRGB(string))
+export const luminanceOfString = (string: string) => luminance(parseRGB(string))
 
 
 

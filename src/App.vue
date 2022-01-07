@@ -7,13 +7,9 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import { luminanceOfString, nameToColor } from "@/color/color"
 
 @Options({})
 export default class App extends Vue {
-
-
-
 
 }
 </script>
@@ -43,6 +39,7 @@ button  {
   }
   &:disabled{
     background-color: rgb(192, 192, 192);
+    border-color:  rgb(141, 141, 141);
     cursor: not-allowed;
   }
 }

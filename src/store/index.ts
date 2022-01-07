@@ -1,24 +1,35 @@
 import { ClientMessage } from '@/types/clientCom'
 import { ChatMessageI, Player } from '@/types/playerList'
-import { ServerMessage } from '@/types/serverCom'
 import { Ship, Point } from '@/types/ship'
 
 import { createStore } from 'vuex'
 
 import main from '../main'
+import { onMessage } from './onMessage'
 
 // State class
 
-class State {
+export class State {
+  // set up
   ships: Ship[]
+
+  //communication
   myID: number | null = null
-  lastMessage: string
   otherPlayers: Player[] = []
+
+  //Lobby
   myName = ''
   nameValid = false
-  globalChat: ChatMessageI[] = []
   sentChallenges: number[] = []
   receivedChallenges: { turn: 'me' | 'you', challenger: number }[] = []
+
+  //chat
+  globalChat: ChatMessageI[] = []
+
+  //game
+  opponent: number | undefined
+  myTurn = true
+
 
   constructor() {
     this.ships = [2, 2, 2, 2, 3, 3, 3, 4, 4, 5,].map((n, i) => {
@@ -29,7 +40,6 @@ class State {
         orientation: "horizontal",
       }
     })
-    this.lastMessage = ''
   }
 }
 
@@ -67,10 +77,6 @@ const sendObject = (obj: ClientMessage) => main.$socket.send(JSON.stringify(obj)
 export default createStore({
   state: new State(),
   getters: {
-    lastMessage(state) {
-      return state.lastMessage
-    },
-
     allShips(state) {
       return state.ships
     },
@@ -125,95 +131,31 @@ export default createStore({
       }
     },
     challenge(state: State, [id, starter]: [number, 'me' | 'you']) {
-      state.sentChallenges.push(id)
-      const obj: ClientMessage = { type: 'message', recipient: id, message: { type: 'challange', message: { type: 'sendChallange', firstMove: starter } } }
-      main.$socket.send(JSON.stringify(obj))
+      if (!state.sentChallenges.some(c => c == id)) {
+        state.sentChallenges.push(id)
+        const obj: ClientMessage = { type: 'message', recipient: id, message: { type: 'challange', message: { type: 'sendChallange', firstMove: starter } } }
+        main.$socket.send(JSON.stringify(obj))
+      }
+    },
+    acceptChallenge(state,id:number) {
+      /**  eventuell 
+      //alle challenges werden abgelehnt
+      state.receivedChallenges.filter(c => c.challenger != id).forEach(({challenger}) =>{
+        sendObject({recipient: challenger,type:'message',message:{type:'challange',message:{type:'cancelChallange'}}})
+      })
+      state.sentChallenges.forEach(challangee => {
+        sendObject({recipient: challangee,type:'message',message:{type:'challange',message:{type:'cancelChallange'}}})
+      })*/
+      sendObject({recipient: id,type:'message',message:{type:'challange',message:{type:'acceptChallange'}}})
+      main.$router.push('setup')
+      state.opponent = id
+      state.myTurn = state.receivedChallenges.find(c => c.challenger == id)?.turn == 'me' ? true : false
     },
     SOCKET_ONOPEN(state, event) {
       console.debug(event)
     },
     SOCKET_ONMESSAGE(state, message) {
-      const data: ServerMessage = JSON.parse(message.data)
-      console.debug(data)
-      switch (data.type) {
-        case 'init':
-          state.myID = data.clientID
-          sendObject({ type: 'broadcast', message: { type: 'chat', text: '' } })
-          break
-        case 'error':
-          console.error(`WS Server error: ${data.message}`)
-          break
-        case 'message':
-          switch (data.message.type) {
-            case 'chat':
-              state.lastMessage = data.message.text
-              break
-            case 'game':
-              break
-            case 'notice': {
-              const notice = data.message.payload
-              if (notice.type == 'nameTaken') {
-                state.nameValid = false
-                state.myName = ''
-              }
-              if (notice.type == 'name') {
-                if (!state.otherPlayers.some(p => p.id == data.sender) && notice.name != '') {
-                  state.otherPlayers.push({ name: notice.name, id: data.sender })
-                }
-
-              }
-              break
-            }
-            case 'challange': {
-              const challange = data.message
-              switch (challange.message.type) {
-                case 'sendChallange':
-                  state.receivedChallenges.push({ turn: challange.message.firstMove == 'me' ? 'you' : 'me', challenger: data.sender })
-                  break
-                case 'cancelChallange':
-                  break
-
-              }
-              break
-            }
-          }
-          break
-        case 'broadcast':
-          if (data.sender != state.myID) {
-            switch (data.message.type) {
-              case 'chat':
-                if (data.message.text != '')
-                  state.globalChat.push({ ownMessage: false, sender: state.otherPlayers.find(p => p.id == data.sender)?.name, message: data.message.text })
-                break
-              case 'game':
-                break
-              // if new Player chooses name
-              case 'notice': {
-                const notice = data.message.payload
-                if (notice.type == 'newName') {
-                  if (state.myName === notice.name) {
-                    sendObject({ type: 'message', message: { type: 'notice', payload: { type: 'nameTaken' } }, recipient: data.sender })
-                  } else if (!state.otherPlayers.some(p => p.name == notice.name) && notice.name != '') {
-                    state.otherPlayers.unshift({ id: data.sender, name: notice.name })
-                  }
-
-                }
-                break
-              }
-            }
-          }
-          break
-        case 'disconnect':
-          state.otherPlayers = state.otherPlayers.filter((p: { id: number, name: string }) => p.id != data.user)
-          break
-        case 'connect':
-          if (state.myName != '') {
-            sendObject({ type: 'message', message: { type: 'notice', payload: { type: 'name', name: state.myName } }, recipient: data.clientID })
-            console.debug(`send my name ${state.myName}; to ID: ${data.clientID}`)
-          }
-
-          break
-      }
+      onMessage(state,message,sendObject)
     },
   },
   actions: {

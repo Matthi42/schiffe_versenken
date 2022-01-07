@@ -40,6 +40,7 @@
           : `width:${60 * ship.shipSize}px;height:60px;`
       }`"
     >
+    <!--
       <svg
         :width="60 * ship.shipSize"
         height="60"
@@ -51,6 +52,8 @@
       >
         <rect :width="60 * ship.shipSize" height="60" />
       </svg>
+      -->
+      <ship-c :ship="ship"></ship-c>
     </div>
     <div class="shipII" draggable="true"></div>
   </div>
@@ -60,10 +63,12 @@
 import { Ship } from "@/types/ship";
 import { Options, Vue } from "vue-class-component";
 import Tile from "./Tile.vue";
+import ShipC from "./Ship.vue"
+
 
 @Options({
   components: {
-    Tile,
+    Tile,ShipC
   },
   props: {
     setUp: Boolean,

@@ -4,21 +4,33 @@
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @drop="onDrop"
-    xmlns="http://www.w3.org/2000/svg"
-    xml:space="preserve"
     :width="size"
     :height="size"
-    version="1.1"
-    style="
-      shape-rendering: geometricPrecision;
-      text-rendering: geometricPrecision;
-      image-rendering: optimizeQuality;
-      fill-rule: evenodd;
-      clip-rule: evenodd;
-    "
     viewBox="0 0 847 847"
     xmlns:xlink="http://www.w3.org/1999/xlink"
   >
+    <defs>
+      <radialGradient
+        id="id0"
+        gradientUnits="userSpaceOnUse"
+        gradientTransform="matrix(1 -0 -0 0.572289 0 182)"
+        cx="423.97"
+        cy="424.45"
+        r="3.32"
+        fx="423.97"
+        fy="424.45"
+      >
+        <stop offset="0" style="stop-opacity: 1; stop-color: #4b97c4" />
+        <stop offset="1" style="stop-opacity: 1; stop-color: #65e0c9" />
+      </radialGradient>
+    </defs>
+
+    <g id="Ebene_x0020_1">
+      <metadata id="CorelCorpID_0Corel-Layer" />
+      <rect id="tile" class="fil0 str0" x="1" y="2" width="847" height="847" />
+    </g>
+    <!--
+ </g>
     <g id="Ebene_x0020_1">
       <metadata id="CorelCorpID_0Corel-Layer" />
       <g>
@@ -30,6 +42,7 @@
         />
       </g>
     </g>
+    -->
   </svg>
 </template>
 
@@ -37,20 +50,20 @@
 import { Options, setup, Vue } from "vue-class-component";
 
 @Options({
-  props:{
-    pos:{x:Number,y:Number},
+  props: {
+    pos: { x: Number, y: Number },
     wasBombt: Boolean,
     onDragOver: Function,
     onDragLeave: Function,
-    onDrop: Function
-  }
+    onDrop: Function,
+  },
 })
 export default class Tile extends Vue {
   si = 60;
-  get size() :string {
+  get size(): string {
     return this.si + "px";
   }
-  pos = {}
+  pos = {};
 
   log(): void {
     console.log(this.pos);
@@ -61,13 +74,11 @@ export default class Tile extends Vue {
 
 <style scoped lang="scss">
 @charset "UTF-8";
-.fil1 {
-  fill: black;
+.str0 {
+  stroke: #549aab;
+  stroke-width: 20;
 }
 .fil0 {
-    fill: white;
-    &:hover{
-        fill:rgb(198, 255, 255);
-    }
+  fill: url(#id0);
 }
 </style>
