@@ -1,4 +1,4 @@
-export type Message = ChatMessage | GameMessage | NoticeMessage
+export type Message = ChatMessage | GameMessage | NoticeMessage | Challange
 
 export interface GameMessage{
     type: 'game'
@@ -29,3 +29,18 @@ export interface Name {
 }
 
 
+export interface Challange {
+    type: 'challange'
+    message: SendCallange | CancelChallange
+}
+
+export interface SendCallange {
+    type: 'sendChallange'
+    firstMove: 'me' | 'you'
+}
+export interface CancelChallange {
+    type: 'cancelChallange'
+}
+export interface AccepChallange {
+    type: 'acceptChallange'
+}

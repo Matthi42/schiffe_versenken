@@ -41,6 +41,10 @@ button  {
   &:hover{
     background-color: rgb(130, 138, 243);
   }
+  &:disabled{
+    background-color: rgb(192, 192, 192);
+    cursor: not-allowed;
+  }
 }
 input {
   border-radius: 5px;

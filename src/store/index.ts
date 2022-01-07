@@ -17,6 +17,8 @@ class State {
   myName = ''
   nameValid = false
   globalChat: ChatMessageI[] = []
+  sentChallenges: number[] = []
+  receivedChallenges: { turn: 'me' | 'you', challenger: number }[] = []
 
   constructor() {
     this.ships = [2, 2, 2, 2, 3, 3, 3, 4, 4, 5,].map((n, i) => {
@@ -94,6 +96,9 @@ export default createStore({
     },
     globalChat(state) {
       return state.globalChat
+    },
+    receivedChallenges(state) {
+      return state.receivedChallenges
     }
   },
   mutations: {
@@ -114,10 +119,15 @@ export default createStore({
       sendObject({ type: 'broadcast', message: { type: 'notice', payload: { type: 'newName', name: name } } })
     },
     sendGlobalChat(state, message: string) {
-      if(message != ''){
+      if (message != '') {
         state.globalChat.push({ ownMessage: true, sender: undefined, message: message })
-        sendObject({ type: 'broadcast', message: { type: 'chat', text: message } })        
+        sendObject({ type: 'broadcast', message: { type: 'chat', text: message } })
       }
+    },
+    challenge(state: State, [id, starter]: [number, 'me' | 'you']) {
+      state.sentChallenges.push(id)
+      const obj: ClientMessage = { type: 'message', recipient: id, message: { type: 'challange', message: { type: 'sendChallange', firstMove: starter } } }
+      main.$socket.send(JSON.stringify(obj))
     },
     SOCKET_ONOPEN(state, event) {
       console.debug(event)
@@ -147,9 +157,21 @@ export default createStore({
                 state.myName = ''
               }
               if (notice.type == 'name') {
-                if (!state.otherPlayers.some(p => p.id == data.sender) && notice.name != '' ) {
+                if (!state.otherPlayers.some(p => p.id == data.sender) && notice.name != '') {
                   state.otherPlayers.push({ name: notice.name, id: data.sender })
                 }
+
+              }
+              break
+            }
+            case 'challange': {
+              const challange = data.message
+              switch (challange.message.type) {
+                case 'sendChallange':
+                  state.receivedChallenges.push({ turn: challange.message.firstMove == 'me' ? 'you' : 'me', challenger: data.sender })
+                  break
+                case 'cancelChallange':
+                  break
 
               }
               break
@@ -160,7 +182,7 @@ export default createStore({
           if (data.sender != state.myID) {
             switch (data.message.type) {
               case 'chat':
-                if ( data.message.text != '' )
+                if (data.message.text != '')
                   state.globalChat.push({ ownMessage: false, sender: state.otherPlayers.find(p => p.id == data.sender)?.name, message: data.message.text })
                 break
               case 'game':
@@ -171,10 +193,10 @@ export default createStore({
                 if (notice.type == 'newName') {
                   if (state.myName === notice.name) {
                     sendObject({ type: 'message', message: { type: 'notice', payload: { type: 'nameTaken' } }, recipient: data.sender })
-                  } else if (!state.otherPlayers.some(p => p.name == notice.name) && notice.name != '' ) {
+                  } else if (!state.otherPlayers.some(p => p.name == notice.name) && notice.name != '') {
                     state.otherPlayers.unshift({ id: data.sender, name: notice.name })
                   }
-                  
+
                 }
                 break
               }
@@ -184,10 +206,10 @@ export default createStore({
         case 'disconnect':
           state.otherPlayers = state.otherPlayers.filter((p: { id: number, name: string }) => p.id != data.user)
           break
-        case 'connect': 
-          if(state.myName != ''){
+        case 'connect':
+          if (state.myName != '') {
             sendObject({ type: 'message', message: { type: 'notice', payload: { type: 'name', name: state.myName } }, recipient: data.clientID })
-            console.debug(`send my name ${state.myName}; to ID: ${data.clientID}`)            
+            console.debug(`send my name ${state.myName}; to ID: ${data.clientID}`)
           }
 
           break
